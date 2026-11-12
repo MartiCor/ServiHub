@@ -138,7 +138,7 @@ public final class Llancador {
         ProcessBuilder pb = new ProcessBuilder(ordre);
         // TODO FORAT 09 · Afegeix TOTES les variables del mapa entorn a l'entorn del
         // fill (abans de start()).
-        Forat.n(9);
+        pb.environment().putAll(entorn);
         Process p = pb.start();
         String sortida = llegeixTot(p.getInputStream());
         p.waitFor();
@@ -163,13 +163,13 @@ public final class Llancador {
         Process p = new ProcessBuilder(ordre).start();
         // TODO FORAT 10 · Posa-hi el flux pel qual el pare ESCRIU a l'entrada estàndard
         // del fill.
-        PrintWriter capAlFill = new PrintWriter(new OutputStreamWriter(Forat.n(10), StandardCharsets.UTF_8), true);
+        PrintWriter capAlFill = new PrintWriter(new OutputStreamWriter(p.getOutputStream(), StandardCharsets.UTF_8), true);
         for (String linia : linies) {
             capAlFill.println(linia);
         }
         // TODO FORAT 11 · Ja no hi ha més línies: fes que el fill rebi l'EOF (si no, es
         // queda esperant per sempre).
-        Forat.n(11);
+        capAlFill.close();
         String sortida = llegeixTot(p.getInputStream());
         p.waitFor();
         return sortida;
@@ -195,16 +195,16 @@ public final class Llancador {
         Process p = new ProcessBuilder(ordre).inheritIO().start();
         // TODO FORAT 12 · Espera el fill com a màxim «segons» segons. haAcabat ha de
         // dir si ha acabat dins del temps.
-        boolean haAcabat = Forat.n(12);
+        boolean haAcabat = p.waitFor(segons, TimeUnit.SECONDS);
         Estat estat;
         if (haAcabat) {
             estat = Estat.segonsCodi(p.exitValue());
         } else {
             // TODO FORAT 13 · S'ha passat de temps: demana-li amablement que acabi.
-            Forat.n(13);
+            p.destroy();
             if (!p.waitFor(2, TimeUnit.SECONDS)) {
                 // TODO FORAT 14 · Al cap de 2 segons encara és viu: mata'l a la força.
-                Forat.n(14);
+                p.destroyForcibly();
                 p.waitFor();
             }
             estat = Estat.AVORTADA;

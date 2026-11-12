@@ -19,6 +19,6 @@ public enum Estat {
      */
     public static Estat segonsCodi(int codi) {
         // TODO FORAT 05 · Codi 0 vol dir CORRECTA; qualsevol altre codi, FALLIDA.
-        return Forat.n(5);
+        return 0 == codi ? CORRECTA : FALLIDA;
     }
 }

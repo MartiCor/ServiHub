@@ -106,17 +106,17 @@ public final class Llancador {
         } catch (IOException e) {
             // TODO FORAT 06 · El programa no s'ha pogut llançar: retorna un Resultat de
             // feina no arrencada amb el missatge de l'excepció.
-            return Forat.n(6);
+            return Resultat.noArrencada(nom, e.getMessage());
         }
         FilLector out = FilLector.engega(p.getInputStream());
         // TODO FORAT 07 · Engega un segon FilLector que buidi la sortida d'ERROR del
         // fill.
-        FilLector err = Forat.n(7);
+        FilLector err = FilLector.engega(p.getErrorStream());
         int codi = p.waitFor();
         out.join();
         err.join();
         // TODO FORAT 08 · Desa a pid l'identificador del procés fill (no el del pare).
-        long pid = Forat.n(8);
+        long pid = p.pid();
         long durada = System.currentTimeMillis() - inici;
         return new Resultat(nom, pid, codi, Estat.segonsCodi(codi), durada, out.text(), err.text());
     }

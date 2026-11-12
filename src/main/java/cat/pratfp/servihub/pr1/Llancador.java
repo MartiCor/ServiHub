@@ -18,12 +18,15 @@ import java.util.concurrent.TimeUnit;
 /**
  * ServiHub v1 · el llançador multiprocés.
  * <p>
- * Cada mètode llança un o més processos fills amb {@link ProcessBuilder} i en controla el resultat.
- * Hi ha <b>20 forats</b> marcats amb {@code TODO FORAT xx}: substituïu cada {@code Forat.n(xx)} per la línia de codi correcta.
+ * Cada mètode llança un o més processos fills amb {@link ProcessBuilder} i en
+ * controla el resultat.
+ * Hi ha <b>20 forats</b> marcats amb {@code TODO FORAT xx}: substituïu cada
+ * {@code Forat.n(xx)} per la línia de codi correcta.
  */
 public final class Llancador {
 
-    private Llancador() {}
+    private Llancador() {
+    }
 
     // =====================================================================
     // BLOC A · Llançar un procés i esperar-lo (forats 01, 02 i 03) · proves A1-A3
@@ -35,16 +38,19 @@ public final class Llancador {
      *
      * @param ordre programa i arguments
      * @return el codi de retorn del fill
-     * @throws IOException si el programa no es pot llançar (per exemple, si no existeix)
+     * @throws IOException si el programa no es pot llançar (per exemple, si no
+     *                     existeix)
      */
     public static int executa(String... ordre) throws IOException, InterruptedException {
         ProcessBuilder pb = new ProcessBuilder(ordre);
-        // TODO FORAT 01 · Fes que el fill escrigui directament a la consola del pare (sessió 2, Ex2LlancaIEspera).
-        Forat.n(1);
+        // TODO FORAT 01 · Fes que el fill escrigui directament a la consola del pare
+        // (sessió 2, Ex2LlancaIEspera).
+        pb.inheritIO();
         // TODO FORAT 02 · Llança el procés fill i desa'l a la variable p.
-        Process p = Forat.n(2);
+        Process p = pb.start();
         // TODO FORAT 03 · Espera que el fill acabi i retorna el seu codi de retorn.
-        return Forat.n(3);
+        int codi = p.waitFor();
+        return codi;
     }
 
     // =====================================================================
@@ -53,7 +59,8 @@ public final class Llancador {
 
     /**
      * Llegeix un flux de text sencer, línia a línia, fins al final (EOF).
-     * Les línies es retornen unides amb "\n" i sense salt de línia al final. Si el flux és buit, retorna "".
+     * Les línies es retornen unides amb "\n" i sense salt de línia al final. Si el
+     * flux és buit, retorna "".
      *
      * @param flux el flux que cal llegir (per exemple, p.getInputStream())
      * @return tot el text llegit
@@ -62,8 +69,9 @@ public final class Llancador {
         StringJoiner text = new StringJoiner("\n");
         try (BufferedReader r = new BufferedReader(new InputStreamReader(flux, StandardCharsets.UTF_8))) {
             String linia;
-            // TODO FORAT 04 · Llegeix la línia següent del lector r. Quan arriba l'EOF, ha de valdre null.
-            while ((linia = Forat.n(4)) != null) {
+            // TODO FORAT 04 · Llegeix la línia següent del lector r. Quan arriba l'EOF, ha
+            // de valdre null.
+            while ((linia = r.readLine()) != null) {
                 text.add(linia);
             }
         }
@@ -77,11 +85,13 @@ public final class Llancador {
     // El forat 05 és a la classe Estat, mètode segonsCodi.
 
     // =====================================================================
-    // BLOC D · Capturar la sortida i l'error per separat (forats 06, 07 i 08) · proves D1-D3
+    // BLOC D · Capturar la sortida i l'error per separat (forats 06, 07 i 08) ·
+    // proves D1-D3
     // =====================================================================
 
     /**
-     * Llança un procés, en captura la sortida estàndard i la d'error per separat i n'espera el final.
+     * Llança un procés, en captura la sortida estàndard i la d'error per separat i
+     * n'espera el final.
      * Si el programa no es pot llançar, retorna {@link Resultat#noArrencada}.
      *
      * @param nom   nom de la feina
@@ -94,11 +104,13 @@ public final class Llancador {
         try {
             p = new ProcessBuilder(ordre).start();
         } catch (IOException e) {
-            // TODO FORAT 06 · El programa no s'ha pogut llançar: retorna un Resultat de feina no arrencada amb el missatge de l'excepció.
+            // TODO FORAT 06 · El programa no s'ha pogut llançar: retorna un Resultat de
+            // feina no arrencada amb el missatge de l'excepció.
             return Forat.n(6);
         }
         FilLector out = FilLector.engega(p.getInputStream());
-        // TODO FORAT 07 · Engega un segon FilLector que buidi la sortida d'ERROR del fill.
+        // TODO FORAT 07 · Engega un segon FilLector que buidi la sortida d'ERROR del
+        // fill.
         FilLector err = Forat.n(7);
         int codi = p.waitFor();
         out.join();
@@ -114,7 +126,8 @@ public final class Llancador {
     // =====================================================================
 
     /**
-     * Llança un procés afegint-li variables d'entorn i en retorna la sortida estàndard.
+     * Llança un procés afegint-li variables d'entorn i en retorna la sortida
+     * estàndard.
      *
      * @param entorn variables que s'afegeixen a l'entorn del fill
      * @param ordre  programa i arguments
@@ -123,7 +136,8 @@ public final class Llancador {
     public static String executaAmbEntorn(Map<String, String> entorn, String... ordre)
             throws IOException, InterruptedException {
         ProcessBuilder pb = new ProcessBuilder(ordre);
-        // TODO FORAT 09 · Afegeix TOTES les variables del mapa entorn a l'entorn del fill (abans de start()).
+        // TODO FORAT 09 · Afegeix TOTES les variables del mapa entorn a l'entorn del
+        // fill (abans de start()).
         Forat.n(9);
         Process p = pb.start();
         String sortida = llegeixTot(p.getInputStream());
@@ -132,11 +146,13 @@ public final class Llancador {
     }
 
     // =====================================================================
-    // BLOC F · Escriure a l'entrada estàndard del fill (forats 10 i 11) · proves F1-F2
+    // BLOC F · Escriure a l'entrada estàndard del fill (forats 10 i 11) · proves
+    // F1-F2
     // =====================================================================
 
     /**
-     * Envia línies a l'entrada estàndard d'un procés i en retorna la sortida estàndard.
+     * Envia línies a l'entrada estàndard d'un procés i en retorna la sortida
+     * estàndard.
      *
      * @param linies línies que s'envien al fill, una per línia
      * @param ordre  programa i arguments
@@ -145,12 +161,14 @@ public final class Llancador {
     public static String enviaPerEntrada(List<String> linies, String... ordre)
             throws IOException, InterruptedException {
         Process p = new ProcessBuilder(ordre).start();
-        // TODO FORAT 10 · Posa-hi el flux pel qual el pare ESCRIU a l'entrada estàndard del fill.
+        // TODO FORAT 10 · Posa-hi el flux pel qual el pare ESCRIU a l'entrada estàndard
+        // del fill.
         PrintWriter capAlFill = new PrintWriter(new OutputStreamWriter(Forat.n(10), StandardCharsets.UTF_8), true);
         for (String linia : linies) {
             capAlFill.println(linia);
         }
-        // TODO FORAT 11 · Ja no hi ha més línies: fes que el fill rebi l'EOF (si no, es queda esperant per sempre).
+        // TODO FORAT 11 · Ja no hi ha més línies: fes que el fill rebi l'EOF (si no, es
+        // queda esperant per sempre).
         Forat.n(11);
         String sortida = llegeixTot(p.getInputStream());
         p.waitFor();
@@ -163,7 +181,8 @@ public final class Llancador {
 
     /**
      * Llança un procés i li dona un temps màxim per acabar.
-     * Si no acaba a temps, es demana que acabi; si en 2 segons encara és viu, es mata a la força.
+     * Si no acaba a temps, es demana que acabi; si en 2 segons encara és viu, es
+     * mata a la força.
      *
      * @param nom    nom de la feina
      * @param segons temps màxim d'execució
@@ -174,7 +193,8 @@ public final class Llancador {
             throws IOException, InterruptedException {
         long inici = System.currentTimeMillis();
         Process p = new ProcessBuilder(ordre).inheritIO().start();
-        // TODO FORAT 12 · Espera el fill com a màxim «segons» segons. haAcabat ha de dir si ha acabat dins del temps.
+        // TODO FORAT 12 · Espera el fill com a màxim «segons» segons. haAcabat ha de
+        // dir si ha acabat dins del temps.
         boolean haAcabat = Forat.n(12);
         Estat estat;
         if (haAcabat) {
@@ -198,7 +218,8 @@ public final class Llancador {
     // =====================================================================
 
     /**
-     * Executa diverses feines EN PARAL·LEL: primer les llança totes i després les espera totes.
+     * Executa diverses feines EN PARAL·LEL: primer les llança totes i després les
+     * espera totes.
      * Els resultats es retornen en el mateix ordre que les feines.
      *
      * @param feines les feines que cal executar
@@ -208,13 +229,15 @@ public final class Llancador {
         long inici = System.currentTimeMillis();
         List<Process> fills = new ArrayList<>();
         for (Feina f : feines) {
-            // TODO FORAT 15 · Llança la feina f (amb inheritIO) i afegeix el procés a la llista fills. Aquí NO l'esperis.
+            // TODO FORAT 15 · Llança la feina f (amb inheritIO) i afegeix el procés a la
+            // llista fills. Aquí NO l'esperis.
             Forat.n(15);
         }
         List<Resultat> resultats = new ArrayList<>();
         for (int i = 0; i < feines.size(); i++) {
             Process p = fills.get(i);
-            // TODO FORAT 16 · Ara sí: espera que aquest fill acabi i desa'n el codi de retorn.
+            // TODO FORAT 16 · Ara sí: espera que aquest fill acabi i desa'n el codi de
+            // retorn.
             int codi = Forat.n(16);
             long durada = System.currentTimeMillis() - inici;
             resultats.add(new Resultat(feines.get(i).nom(), p.pid(), codi, Estat.segonsCodi(codi), durada, "", ""));
@@ -227,8 +250,10 @@ public final class Llancador {
     // =====================================================================
 
     /**
-     * Llança un procés i en desa la sortida estàndard a {@code <carpeta>/<nom>.out} i l'error a
-     * {@code <carpeta>/<nom>.err}. Si la carpeta no existeix, es crea. El directori de treball del fill
+     * Llança un procés i en desa la sortida estàndard a {@code <carpeta>/<nom>.out}
+     * i l'error a
+     * {@code <carpeta>/<nom>.err}. Si la carpeta no existeix, es crea. El directori
+     * de treball del fill
      * és aquesta mateixa carpeta.
      *
      * @param nom     nom de la feina (i dels fitxers)
@@ -243,7 +268,8 @@ public final class Llancador {
         ProcessBuilder pb = new ProcessBuilder(ordre);
         // TODO FORAT 17 · Fes que el directori de treball del fill sigui la carpeta.
         Forat.n(17);
-        // TODO FORAT 18 · Redirigeix la sortida ESTÀNDARD del fill al fitxer <carpeta>/<nom>.out (l'error ja està fet a sota).
+        // TODO FORAT 18 · Redirigeix la sortida ESTÀNDARD del fill al fitxer
+        // <carpeta>/<nom>.out (l'error ja està fet a sota).
         Forat.n(18);
         pb.redirectError(carpeta.resolve(nom + ".err").toFile());
         Process p = pb.start();
@@ -257,7 +283,8 @@ public final class Llancador {
     // =====================================================================
 
     /**
-     * Encadena processos amb una canonada (com A | B | C a la consola): la sortida de cada etapa
+     * Encadena processos amb una canonada (com A | B | C a la consola): la sortida
+     * de cada etapa
      * és l'entrada de la següent. Retorna la sortida de la DARRERA etapa.
      *
      * @param etapes l'ordre de cada etapa, en ordre
@@ -268,7 +295,8 @@ public final class Llancador {
         for (String[] ordre : etapes) {
             builders.add(new ProcessBuilder(ordre));
         }
-        // TODO FORAT 19 · Llança totes les etapes de cop, connectades entre elles (sessió 4, Ex4Canonada).
+        // TODO FORAT 19 · Llança totes les etapes de cop, connectades entre elles
+        // (sessió 4, Ex4Canonada).
         List<Process> processos = Forat.n(19);
         Process ultim = processos.get(processos.size() - 1);
         String sortida = llegeixTot(ultim.getInputStream());
@@ -283,12 +311,14 @@ public final class Llancador {
     // =====================================================================
 
     /**
-     * Retorna el PID del procés que està executant ServiHub (el pare de tots els fills).
+     * Retorna el PID del procés que està executant ServiHub (el pare de tots els
+     * fills).
      *
      * @return el PID del procés actual
      */
     public static long pidDeServiHub() {
-        // TODO FORAT 20 · Retorna el PID del procés actual (sessió 2, Ex1ProcessosDelSistema).
+        // TODO FORAT 20 · Retorna el PID del procés actual (sessió 2,
+        // Ex1ProcessosDelSistema).
         return Forat.n(20);
     }
 }
